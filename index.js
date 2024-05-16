@@ -1,13 +1,11 @@
-import express from "express";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import cookieParser from "cookie-parser";
-import authRoutes from "./routes/auths.js";
-import tweetRoutes from "./routes/tweets.js";
-import pug from 'pug'
-import axios from 'axios'
-
-
+const express = require("express");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const authRoutes = require("./routes/auths.js");
+const tweetRoutes = require("./routes/tweets.js");
+const pug = require('pug');
+const axios = require('axios');
 
 const app = express();
 dotenv.config();
@@ -16,16 +14,14 @@ mongoose.connect(process.env.MONGO).then(() => {
     console.log("DB connected")
 }).catch((err) => {
     console.log(err)
-})
-
-
+});
 
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/tweets", tweetRoutes);
 
-app.set('view engine', 'pug')
+app.set('view engine', 'pug');
 app.get('/', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:8000/api/tweets/user/all/663f856e8275d04413a51676');
@@ -39,5 +35,5 @@ app.get('/', async (req, res) => {
 });
 
 app.listen(8000, () => {
-    console.log(`Server is running...`)
-})
+    console.log(`Server is running...`);
+});

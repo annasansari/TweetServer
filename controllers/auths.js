@@ -1,16 +1,16 @@
-import User from "../models/user.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { handleError } from "../error.js";
+const User = require("../models/user.js");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { handleError } = require("../error.js");
 
-export const signup = async (req, res, next) => {
+exports.signup = async (req, res, next) => {
     try {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
         const newUser = new User({ ...req.body, password: hash });
 
         await newUser.save();
-        res.status(200).json({ message: "Account created successfully" })
+        res.status(200).json({ message: "Account created successfully" });
 
         const token = jwt.sign({ id: newUser._id }, process.env.JWT);
 
@@ -26,9 +26,7 @@ export const signup = async (req, res, next) => {
     }
 };
 
-// Signin api
-
-export const signin = async (req, res, next) => {
+exports.signin = async (req, res, next) => {
     try {
         const user = await User.findOne({ email: req.body.email });
 
