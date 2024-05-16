@@ -6,7 +6,7 @@ exports.createTweet = async (req, res, next) => {
     const newTweet = new Tweet(req.body);
     try {
         const savedTweet = await newTweet.save();
-        res.status(200).json(savedTweet);
+        res.status(200).json({ message: "Tweet created", data: savedTweet });
     } catch (err) {
         next(handleError(500, err));
     }
@@ -30,7 +30,7 @@ exports.updateTweet = async (req, res, next) => {
         if (!updatedTweet) {
             return res.status(404).json({ error: 'Tweet not found' });
         }
-        res.json(updatedTweet);
+        res.status(200).json({ message: "Tweet Update successfully", data: updatedTweet });
     } catch (err) {
         next(handleError(500, err));
     }

@@ -10,7 +10,9 @@ const axios = require('axios');
 const app = express();
 dotenv.config();
 
-mongoose.connect(process.env.MONGO).then(() => {
+const MONGO = 'mongodb+srv://anas:anas@tweetserver.rhvsnwp.mongodb.net/?retryWrites=true&w=majority&appName=tweetServer'
+
+mongoose.connect(MONGO).then(() => {
     console.log("DB connected")
 }).catch((err) => {
     console.log(err)

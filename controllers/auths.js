@@ -1,18 +1,15 @@
 const User = require("../models/user.js");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { handleError } = require("../error.js");
 
+const JWT_SECRET = "E$%XCRT&b8yCrt7bY*";
+
 exports.signup = async (req, res, next) => {
     try {
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(req.body.password, salt);
-        const newUser = new User({ ...req.body, password: hash });
-
+        const newUser = new User(req.body);
         await newUser.save();
-        res.status(200).json({ message: "Account created successfully" });
 
-        const token = jwt.sign({ id: newUser._id }, process.env.JWT);
+        const token = jwt.sign({ id: newUser._id }, JWT_SECRET);
 
         const { password, ...othersData } = newUser._doc;
         res
@@ -32,11 +29,11 @@ exports.signin = async (req, res, next) => {
 
         if (!user) return next(handleError(404, "User not found"));
 
-        const isCorrect = await bcrypt.compare(req.body.password, user.password);
+        if (req.body.password !== user.password) {
+            return next(handleError(400, "Wrong password"));
+        }
 
-        if (!isCorrect) return next(handleError(400, "Wrong password"));
-
-        const token = jwt.sign({ id: user._id }, process.env.JWT);
+        const token = jwt.sign({ id: user._id }, JWT_SECRET);
         const { password, ...othersData } = user._doc;
 
         res
