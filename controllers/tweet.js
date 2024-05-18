@@ -1,14 +1,31 @@
 const Tweet = require("../models/Tweet.js");
 const { handleError } = require("../error.js");
-// const User = require("../models/user.js");
+const User = require("../models/user.js");
 
 exports.createTweet = async (req, res, next) => {
-    const newTweet = new Tweet(req.body);
+
+    const { userId, description } = req.body
+    // console.log(userId, description)
     try {
-        const savedTweet = await newTweet.save();
-        res.status(200).json({ message: "Tweet created", data: savedTweet });
-    } catch (err) {
-        next(handleError(500, err));
+        const user = await User.findById(userId)
+        // console.log(user)
+        if (!user) {
+            res.status(404).json({ message: "User not found" })
+        }
+        const tweet = new Tweet({
+            userId: user._id,
+            description: description,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            image: user.profilePicture
+        })
+
+        await tweet.save()
+
+        res.status(201).json({ message: "Tweet created successfully", data: tweet })
+
+    } catch (error) {
+        next(handleError(500, error))
     }
 };
 
@@ -48,3 +65,18 @@ exports.getUserTweets = async (req, res, next) => {
         next(handleError(500, err));
     }
 };
+
+exports.getAllTweets = async (req, res, next) => {
+
+    try {
+        const tweets = await Tweet.find()
+
+        if (tweets.length == 0 || !tweets) {
+            res.status(403).json({ message: "Tweets not found" })
+        }
+        res.status(200).json({ data: tweets })
+
+    } catch (error) {
+        next(handleError(500, error))
+    }
+}
